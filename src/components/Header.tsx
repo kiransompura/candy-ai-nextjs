@@ -17,7 +17,7 @@ export default function Header() {
       {/* Right: Premium + Profile */}
       <div className="flex items-center gap-3">
         {/* Premium button with gradient border */}
-        <button className="gradient-premium-border flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-background text-sm font-semibold hover:bg-secondary transition-colors">
+        <button className="gradient-premium-border hidden mobile-xs:flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-background text-sm font-semibold hover:bg-secondary transition-colors">
           <Gem size={14} className="text-primary" />
           <span className="text-foreground">Premium</span>
           <span className="text-pink font-bold">70% OFF</span>

@@ -109,7 +109,7 @@ export default function Home() {
     )}
     <Layout>
       {/* ── Desktop: two equal columns, full viewport height ── */}
-      <div className="hidden lg:grid lg:grid-cols-2 gap-4 px-5 py-6 h-[calc(100vh-3.5rem)] max-w-[1000px] mx-auto">
+      <div className="hidden lg:grid lg:grid-cols-2 gap-4 px-5 py-6 h-[calc(100vh-3.5rem)] lg:h-full max-w-[1000px] mx-auto">
         <VideoPlayer
           messages={messages}
           isTyping={isTyping}

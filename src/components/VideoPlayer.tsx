@@ -191,7 +191,7 @@ export default function VideoPlayer({
   return (
     <>
       <div
-        className="relative w-full h-full rounded-2xl overflow-hidden select-none"
+        className="relative w-full h-full lg:max-h-[650px] rounded-2xl overflow-hidden select-none"
         style={{ aspectRatio: "3/4" }}
       >
         {/* Background video */}

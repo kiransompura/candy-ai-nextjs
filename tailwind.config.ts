@@ -16,6 +16,9 @@ export default {
       screens: { "2xl": "1400px" },
     },
     extend: {
+      screens: {
+        'mobile-xs': '420px',
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

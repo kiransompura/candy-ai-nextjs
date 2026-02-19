@@ -1,0 +1,297 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* === Candy.ai Dark Theme === */
+    --background: 0 0% 8%;
+    --foreground: 0 0% 95%;
+
+    --card: 0 0% 11%;
+    --card-foreground: 0 0% 95%;
+
+    --popover: 0 0% 11%;
+    --popover-foreground: 0 0% 95%;
+
+    /* Purple primary */
+    --primary: 262 60% 55%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Subtle dark secondary */
+    --secondary: 0 0% 14%;
+    --secondary-foreground: 0 0% 80%;
+
+    --muted: 0 0% 18%;
+    --muted-foreground: 0 0% 50%;
+
+    --accent: 262 60% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 18%;
+    --input: 0 0% 16%;
+    --ring: 262 60% 55%;
+
+    --radius: 0.75rem;
+
+    /* Custom tokens */
+    --sidebar-bg: 0 0% 10%;
+    --sidebar-border: 0 0% 15%;
+    --header-bg: 0 0% 8%;
+
+    --pink: 330 80% 62%;
+    --pink-foreground: 0 0% 100%;
+
+    --xp-green: 142 71% 45%;
+    --xp-bar-bg: 0 0% 22%;
+
+    --user-bubble: 262 55% 48%;
+    --bot-bubble: 0 0% 20%;
+
+    --card-elevated: 0 0% 13%;
+
+    --gold: 43 96% 56%;
+
+    /* Sidebar */
+    --sidebar-background: 0 0% 10%;
+    --sidebar-foreground: 0 0% 65%;
+    --sidebar-primary: 262 60% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 14%;
+    --sidebar-accent-foreground: 0 0% 90%;
+    --sidebar-border: 0 0% 15%;
+    --sidebar-ring: 262 60% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted));
+    border-radius: 2px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground));
+  }
+}
+
+/* Animations */
+@keyframes slideInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes unlockPulse {
+  0%   { transform: scale(1); box-shadow: 0 0 0 0 hsl(var(--xp-green) / 0.5); }
+  50%  { transform: scale(1.03); box-shadow: 0 0 0 8px hsl(var(--xp-green) / 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 hsl(var(--xp-green) / 0); }
+}
+
+@keyframes xpBump {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+@keyframes levelUpGlow {
+  0%   { text-shadow: 0 0 0px hsl(var(--xp-green)); }
+  50%  { text-shadow: 0 0 16px hsl(var(--xp-green)); }
+  100% { text-shadow: 0 0 0px hsl(var(--xp-green)); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.animate-slide-in-up { animation: slideInUp 0.3s ease-out; }
+.animate-unlock-pulse { animation: unlockPulse 0.6s ease-out; }
+.animate-xp-bump { animation: xpBump 0.35s ease-out; }
+.animate-level-up-glow { animation: levelUpGlow 1s ease-in-out; }
+
+.gradient-premium {
+  background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--pink)));
+}
+
+.gradient-premium-border {
+  border: 1.5px solid transparent;
+  background-clip: padding-box;
+  position: relative;
+}
+
+.gradient-premium-border::before {
+  content: '';
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--pink)));
+  z-index: -1;
+}
+
+.video-overlay-gradient {
+  background: linear-gradient(
+    to top,
+    rgba(0,0,0,0.62) 0%,
+    rgba(0,0,0,0.28) 22%,
+    rgba(0,0,0,0.08) 42%,
+    transparent 58%
+  );
+}
+
+/* Chat area: messages fade and blur as they scroll up */
+.chat-fade-mask {
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 0.4) 12%,
+    black 28%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 0.4) 12%,
+    black 28%
+  );
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+
+.chat-top-blur {
+  /* Blur only, no dark overlay – fade comes from .chat-fade-mask */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.sidebar-icon-active {
+  background: hsl(var(--gold) / 0.15);
+  color: hsl(var(--gold));
+  border-color: hsl(var(--gold) / 0.5);
+}
+
+/* Confirm dialog pop-in */
+@keyframes confirmPop {
+  0%   { transform: scale(0.82) translateY(8px); opacity: 0; }
+  65%  { transform: scale(1.03) translateY(-2px); opacity: 1; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.animate-confirm-pop {
+  animation: confirmPop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Typing indicator dots */
+@keyframes typingBounce {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.35;
+  }
+  30% {
+    transform: translateY(-5px);
+    opacity: 1;
+  }
+}
+
+.typing-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: hsl(var(--foreground) / 0.7);
+  animation: typingBounce 1.2s ease-in-out infinite;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* ── Tap to start pulse ── */
+@keyframes tapPulse {
+  0%, 100% { opacity: 1;   transform: scale(1);    }
+  50%       { opacity: 0.6; transform: scale(0.96); }
+}
+
+/* ── XP Toast: floats right of level badge & drifts upward ── */
+@keyframes xpToastFloat {
+  0%   { opacity: 0; transform: translateY(4px) scale(0.65); }
+  18%  { opacity: 1; transform: translateY(-2px) scale(1.1); }
+  60%  { opacity: 1; transform: translateY(-12px) scale(1); }
+  100% { opacity: 0; transform: translateY(-26px) scale(0.9); }
+}
+.xp-toast {
+  position: absolute;
+  left: calc(100% + 6px);
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  z-index: 50;
+  font-size: 0.8rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  background: linear-gradient(135deg, #facc15 0%, #f97316 50%, #ec4899 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 6px rgba(251,191,36,0.9)) drop-shadow(0 0 12px rgba(249,115,22,0.6));
+  animation: xpToastFloat 1.3s cubic-bezier(0.22, 0.9, 0.36, 1) forwards;
+  white-space: nowrap;
+  user-select: none;
+}
+
+/* ── Conic gradient level badge border ── */
+.level-badge-ring {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+}
+.level-badge-ring::before {
+  content: '';
+  position: absolute;
+  inset: -2.5px;
+  border-radius: inherit;
+  background: var(--badge-gradient);
+  z-index: -1;
+}
+.level-badge-ring::after {
+  content: '';
+  position: absolute;
+  inset: -2.5px;
+  border-radius: inherit;
+  background: var(--badge-gradient);
+  z-index: -2;
+  filter: blur(6px);
+  opacity: 0.7;
+}
+
+/* ── XP progress bar glow ── */
+.xp-bar-fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.7s ease-out;
+  position: relative;
+}
+.xp-bar-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: inherit;
+  filter: blur(4px);
+  opacity: 0.6;
+}

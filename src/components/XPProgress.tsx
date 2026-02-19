@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { getXpInCurrentLevel, XP_PER_LEVEL } from "@/data/mockData";
 
 interface XPProgressProps {
@@ -27,7 +28,7 @@ function getColors(pct: number): { arc: string; bar: string; glow: string } {
 export default function XPProgress({ xp, level, animateBump }: XPProgressProps) {
   const xpInLevel = getXpInCurrentLevel(xp);
   const percent = Math.min((xpInLevel / XP_PER_LEVEL) * 100, 100);
-  const { arc, bar, glow } = getColors(percent);
+  const { arc, bar, glow } = useMemo(() => getColors(percent), [percent]);
 
   const size = 40;
   const strokeW = 3;

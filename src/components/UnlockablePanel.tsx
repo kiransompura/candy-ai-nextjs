@@ -4,6 +4,7 @@ import { UserRound } from "lucide-react";
 import XPProgress from "./XPProgress";
 import UnlockItemCard from "./UnlockItemCard";
 import { VideoItem } from "@/data/mockData";
+import { useCallback } from "react";
 
 interface UnlockablePanelProps {
   videoList: VideoItem[];
@@ -24,6 +25,13 @@ export default function UnlockablePanel({
   xpBump,
   onSelectVideo,
 }: UnlockablePanelProps) {
+  const handleSelectVideo = useCallback(
+    (id: string) => {
+      onSelectVideo(id);
+    },
+    [onSelectVideo],
+  );
+
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
@@ -47,7 +55,7 @@ export default function UnlockablePanel({
             userLevel={userLevel}
             isActive={item.id === activeVideoId}
             justUnlocked={item.id === justUnlockedId}
-            onClick={() => onSelectVideo(item.id)}
+            onClick={handleSelectVideo}
           />
         ))}
       </div>

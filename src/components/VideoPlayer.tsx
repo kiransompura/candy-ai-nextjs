@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useState, useCallback } from "react";
+import { useRef, useEffect, useState, useCallback, useMemo } from "react";
 import { Volume2, VolumeX, MoreVertical, X, Repeat, RefreshCw, EyeOff, Eye, Send } from "lucide-react";
 import Image from "next/image";
 import MessageBubble from "./MessageBubble";
@@ -35,6 +35,24 @@ const glassBtnActive: React.CSSProperties = {
   backdropFilter: "blur(18px)",
   WebkitBackdropFilter: "blur(18px)",
   border: "1px solid rgba(139,92,246,0.45)",
+};
+
+const typingBubbleStyle: React.CSSProperties = {
+  background: "rgba(30,30,30,0.85)",
+  backdropFilter: "blur(8px)",
+  WebkitBackdropFilter: "blur(8px)",
+};
+
+const chatInputContainerStyle: React.CSSProperties = {
+  background: "rgba(255,255,255,0.07)",
+  backdropFilter: "blur(24px)",
+  WebkitBackdropFilter: "blur(24px)",
+  border: "1px solid rgba(255,255,255,0.14)",
+  boxShadow: "0 4px 20px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.1)",
+};
+
+const sendButtonBaseStyle: React.CSSProperties = {
+  background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--pink)))",
 };
 
 export default function VideoPlayer({
@@ -119,7 +137,7 @@ export default function VideoPlayer({
     }
   }, [isLevelMode, isLoopEnabled, onSwitchToDefault]);
 
-  const handleSend = () => {
+  const handleSend = useCallback(() => {
     const text = inputValue.trim();
     if (!text) return;
     onSendMessage(text);
@@ -127,27 +145,48 @@ export default function VideoPlayer({
     if (inputRef.current) {
       inputRef.current.style.height = "auto";
     }
-  };
+  }, [inputValue, onSendMessage]);
 
-  const handleSuggestion = (text: string) => {
+  const handleSuggestion = useCallback((text: string) => {
     setInputValue(text);
     inputRef.current?.focus();
-  };
+  }, []);
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
     // Shift+Enter falls through naturally — textarea inserts newline
-  };
+    },
+    [handleSend],
+  );
 
-  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInputValue(e.target.value);
-    // Auto-grow
-    e.target.style.height = "auto";
-    e.target.style.height = `${e.target.scrollHeight}px`;
-  };
+  const handleTextareaChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setInputValue(e.target.value);
+      // Auto-grow
+      e.target.style.height = "auto";
+      e.target.style.height = `${e.target.scrollHeight}px`;
+    },
+    [],
+  );
+
+  const levelBadgeMetrics = useMemo(() => {
+    const pct = Math.min((getXpInCurrentLevel(xp) / XP_PER_LEVEL) * 100, 100);
+    const size = 32;
+    const strokeW = 2.5;
+    const r = (size - strokeW) / 2;
+    const circ = 2 * Math.PI * r;
+    const dash = (pct / 100) * circ;
+    const arcColor =
+      pct < 34 ? "#a855f7" // purple
+      : pct < 67 ? "#f59e0b" // amber
+      : "#22c55e"; // green
+
+    return { pct, size, strokeW, r, circ, dash, arcColor };
+  }, [xp]);
 
   return (
     <>
@@ -188,17 +227,7 @@ export default function VideoPlayer({
 
           {/* Level badge with SVG arc progress ring */}
           {(() => {
-            const pct = Math.min((getXpInCurrentLevel(xp) / XP_PER_LEVEL) * 100, 100);
-            const size = 32;
-            const strokeW = 2.5;
-            const r = (size - strokeW) / 2;
-            const circ = 2 * Math.PI * r;
-            const dash = (pct / 100) * circ;
-            // Rotate so arc starts from top (-90°)
-            const arcColor =
-              pct < 34 ? "#a855f7"   // purple
-              : pct < 67 ? "#f59e0b"  // amber
-              : "#22c55e";            // green
+            const { size, strokeW, r, circ, dash, arcColor, pct } = levelBadgeMetrics;
             return (
               <button
                 type="button"
@@ -365,10 +394,7 @@ export default function VideoPlayer({
                 <div className="flex justify-start animate-slide-in-up">
                   <div
                     className="flex items-center gap-1.5 px-4 py-3 rounded-2xl"
-                    style={{
-                      background: "rgba(30,30,30,0.85)",
-                      backdropFilter: "blur(8px)",
-                    }}
+                    style={typingBubbleStyle}
                   >
                     <span className="typing-dot" />
                     <span className="typing-dot" />
@@ -391,13 +417,7 @@ export default function VideoPlayer({
 
             <div
               className="flex items-center gap-2 px-4 rounded-2xl"
-              style={{
-                background: "rgba(255,255,255,0.07)",
-                backdropFilter: "blur(24px)",
-                WebkitBackdropFilter: "blur(24px)",
-                border: "1px solid rgba(255,255,255,0.14)",
-                boxShadow: "0 4px 20px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.1)",
-              }}
+              style={chatInputContainerStyle}
             >
               <textarea
                 ref={inputRef}
@@ -415,7 +435,7 @@ export default function VideoPlayer({
                 disabled={!inputValue.trim()}
                 className="w-8 h-8 rounded-full flex items-center justify-center text-white transition-all active:scale-95 shrink-0"
                 style={{
-                  background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--pink)))",
+                  ...sendButtonBaseStyle,
                   boxShadow: inputValue.trim() ? "0 2px 8px hsl(var(--primary) / 0.45)" : "none",
                   opacity: inputValue.trim() ? 1 : 0.25,
                   cursor: inputValue.trim() ? "pointer" : "default",

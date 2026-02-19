@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import dynamic from "next/dynamic";
 import Layout from "@/components/Layout";
 import VideoPlayer from "@/components/VideoPlayer";
 import UnlockablePanel from "@/components/UnlockablePanel";
-import XPDialog from "@/components/XPDialog";
-import LoadingOverlay from "@/components/LoadingOverlay";
 import {
   Message,
   VideoItem,
@@ -16,6 +15,9 @@ import {
   getRandomBotReply,
   generateId,
 } from "@/data/mockData";
+
+const XPDialog = dynamic(() => import("@/components/XPDialog"), { ssr: false });
+const LoadingOverlay = dynamic(() => import("@/components/LoadingOverlay"), { ssr: false });
 
 export default function Home() {
   const [overlayDone, setOverlayDone] = useState(false);
@@ -30,10 +32,15 @@ export default function Home() {
   const prevLevelRef = useRef(1);
 
   const userLevel = getLevel(xp);
-  const activeVideoUrl =
-    activeVideoId != null
-      ? (VIDEO_LIST.find((v: VideoItem) => v.id === activeVideoId)?.videoUrl ?? null)
-      : null;
+  const activeVideo = useMemo<VideoItem | null>(
+    () =>
+      activeVideoId != null
+        ? VIDEO_LIST.find((v: VideoItem) => v.id === activeVideoId) ?? null
+        : null,
+    [activeVideoId],
+  );
+  const activeVideoUrl = activeVideo?.videoUrl ?? null;
+  const activeVideoTitle = activeVideo?.title ?? "";
 
   useEffect(() => {
     const prev = prevLevelRef.current;
@@ -47,7 +54,7 @@ export default function Home() {
     }
   }, [userLevel]);
 
-  const handleSendMessage = (text: string) => {
+  const handleSendMessage = useCallback((text: string) => {
     const userMsg: Message = {
       id: generateId(),
       role: "user",
@@ -77,15 +84,23 @@ export default function Home() {
       setIsTyping(false);
       setMessages((prev) => [...prev, botMsg]);
     }, delay);
-  };
+  }, [xp]);
 
-  const handleResetChat = () => {
+  const handleResetChat = useCallback(() => {
     setMessages([]);
-  };
+  }, []);
 
-  const handleSwitchToDefault = () => {
+  const handleSwitchToDefault = useCallback(() => {
     setActiveVideoId(null);
-  };
+  }, []);
+
+  const handleOpenXPDialog = useCallback(() => {
+    setShowXPDialog(true);
+  }, []);
+
+  const handleCloseXPDialog = useCallback(() => {
+    setShowXPDialog(false);
+  }, []);
 
   return (
     <>
@@ -99,14 +114,14 @@ export default function Home() {
           messages={messages}
           isTyping={isTyping}
           onSendMessage={handleSendMessage}
-          activeVideoTitle={activeVideoId != null ? (VIDEO_LIST.find((v: VideoItem) => v.id === activeVideoId)?.title ?? "") : ""}
+          activeVideoTitle={activeVideoTitle}
           activeVideoUrl={activeVideoUrl}
           userLevel={userLevel}
           xp={xp}
           xpToast={xpToast}
           onResetChat={handleResetChat}
           onSwitchToDefault={handleSwitchToDefault}
-          onLevelBadgeClick={() => setShowXPDialog(true)}
+          onLevelBadgeClick={handleOpenXPDialog}
         />
         <div
           className="relative rounded-2xl p-4 border border-border overflow-y-auto"
@@ -137,14 +152,14 @@ export default function Home() {
           messages={messages}
           isTyping={isTyping}
           onSendMessage={handleSendMessage}
-          activeVideoTitle={activeVideoId != null ? (VIDEO_LIST.find((v: VideoItem) => v.id === activeVideoId)?.title ?? "") : ""}
+          activeVideoTitle={activeVideoTitle}
           activeVideoUrl={activeVideoUrl}
           userLevel={userLevel}
           xp={xp}
           xpToast={xpToast}
           onResetChat={handleResetChat}
           onSwitchToDefault={handleSwitchToDefault}
-          onLevelBadgeClick={() => setShowXPDialog(true)}
+          onLevelBadgeClick={handleOpenXPDialog}
         />
         <div
           className="relative rounded-2xl p-4 border border-border"
@@ -173,7 +188,7 @@ export default function Home() {
         isOpen={showXPDialog}
         xp={xp}
         userLevel={userLevel}
-        onClose={() => setShowXPDialog(false)}
+        onClose={handleCloseXPDialog}
       />
     </Layout>
     </>

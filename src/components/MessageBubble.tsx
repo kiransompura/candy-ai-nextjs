@@ -1,10 +1,11 @@
+import { memo } from "react";
 import { Message } from "@/data/mockData";
 
 interface MessageBubbleProps {
   message: Message;
 }
 
-export default function MessageBubble({ message }: MessageBubbleProps) {
+function MessageBubble({ message }: MessageBubbleProps) {
   if (message.role === "user") {
     return (
       <div className="flex justify-end animate-slide-in-up">
@@ -33,3 +34,5 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
     </div>
   );
 }
+
+export default memo(MessageBubble);

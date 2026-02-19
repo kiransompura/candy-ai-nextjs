@@ -8,7 +8,7 @@ interface UnlockItemCardProps {
   userLevel: number;
   isActive: boolean;
   justUnlocked: boolean;
-  onClick: () => void;
+  onClick: (id: string) => void;
   onLockedClick?: () => void;
 }
 
@@ -32,7 +32,7 @@ export default function UnlockItemCard({ item, userLevel, isActive, justUnlocked
   return (
     <button
       type="button"
-      onClick={unlocked ? onClick : onLockedClick}
+      onClick={unlocked ? () => onClick(item.id) : onLockedClick}
       className={`
         w-full group relative flex items-center gap-3 px-3 py-3 rounded-xl
         border transition-all duration-300 text-left
